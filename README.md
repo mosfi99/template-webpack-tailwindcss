@@ -24,13 +24,13 @@ Outside of `src`, create a `webpack.config.js`:
 const path = require('path');
 
 module.exports = {
-  mode: 'development',
-  entry: './src/index.js',
-  output: {
-    filename: 'main.js',
-    path: path.resolve(__dirname, 'dist'),
-    clean: true,
-  },
+	mode: 'development',
+	entry: './src/index.js',
+	output: {
+		filename: 'main.js',
+		path: path.resolve(__dirname, 'dist'),
+		clean: true,
+	},
 };
 ```
 
@@ -88,7 +88,7 @@ module: {
 Now import your CSS file into `src/index.js`:
 
 ```js
-import "./styles.css";
+import './styles.css';
 ```
 
 And bundle:
@@ -96,6 +96,55 @@ And bundle:
 ```bash
 npx webpack
 ```
+
+## Tailwind CSS
+
+### Install Tailwind CSS v4 with PostCSS
+
+Install Tailwind CSS and PostCSS packages:
+
+```bash
+npm install --save-dev tailwindcss @tailwindcss/postcss postcss postcss-loader
+```
+
+### Configure PostCSS
+
+Create a `postcss.config.mjs` file in your project root:
+
+```js
+export default {
+  plugins: {
+    "@tailwindcss/postcss": {},
+  }
+}
+```
+
+### Update CSS Configuration
+
+Update your CSS rule in `webpack.config.js` to include PostCSS loader:
+
+```js
+module: {
+  rules: [
+    {
+      test: /\.css$/i,
+      use: ["style-loader", "css-loader", "postcss-loader"],
+    },
+  ],
+},
+```
+
+### Import Tailwind CSS
+
+Replace the content of your `src/styles.css` file with:
+
+```css
+@import "tailwindcss";
+```
+
+This single import includes all of Tailwind's base, components, and utilities.
+
+Webpack will automatically process your CSS through PostCSS and generate only the Tailwind styles you actually use.
 
 ## Images
 
@@ -173,3 +222,63 @@ npx webpack serve
 ```
 
 **Note:** If you change the webpack config file while the dev server is running, it will not reflect those config changes.
+
+## npm scripts
+
+`npm run build` would be the same as running `npx webpack`.
+`npm run dev` would be the same as `npx webpack serve`.
+`npm run deploy` to set the deploy commands.
+
+```js
+{
+  // ... other package.json stuff
+  "scripts": {
+    "build": "webpack",
+    "dev": "webpack serve",
+    "deploy": ""
+  },
+  // ... other package.json stuff
+}
+```
+
+## Complete webpack.config.js
+
+```js
+const path = require('path');
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+
+module.exports = {
+  mode: 'development',
+  entry: './src/index.js',
+  output: {
+    filename: 'main.js',
+    path: path.resolve(__dirname, 'dist'),
+    clean: true,
+  },
+  devtool: "eval-source-map",
+  devServer: {
+    watchFiles: ["./src/template.html"],
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: "./src/template.html",
+    }),
+  ],
+  module: {
+    rules: [
+      {
+        test: /\.css$/i,
+        use: ["style-loader", "css-loader", "postcss-loader"],
+      },
+      {
+        test: /\.html$/i,
+        loader: "html-loader",
+      },
+      {
+        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        type: "asset/resource",
+      },
+    ],
+  },
+};
+```

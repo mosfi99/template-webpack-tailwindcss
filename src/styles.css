@@ -1,9 +1,7 @@
-body {
-	background-color: rgb(73, 49, 97);
-}
+@import 'tailwindcss';
 
-h1 {
-	color: rgb(243, 235, 224);
+body {
+	background-color: #1e4372;
 }
 
 img {
