@@ -14,10 +14,8 @@ Create a `src` directory with the JavaScript files (`src/index.js`, and others) 
 
 Outside of `src`, create a `webpack.config.js`:
 
-// webpack.config.js
-const path = require("path");
-
 ```js
+const path = require('path');
 module.exports = {
 	mode: 'development',
 	entry: './src/index.js',
