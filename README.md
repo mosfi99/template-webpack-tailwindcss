@@ -223,21 +223,19 @@ npx webpack serve
 
 **Note:** If you change the webpack config file while the dev server is running, it will not reflect those config changes.
 
-## npm scripts
+## npm scripts at package.json
 
-`npm run build` would be the same as running `npx webpack`.
-`npm run dev` would be the same as `npx webpack serve`.
-`npm run deploy` to set the deploy commands.
+- `npm run build` would be the same as running `npx webpack`.
+- `npm run dev` would be the same as `npx webpack serve`.
+- `npm run deploy` to set the deploy commands.
 
 ```js
 {
-  // ... other package.json stuff
   "scripts": {
     "build": "webpack",
     "dev": "webpack serve",
     "deploy": ""
   },
-  // ... other package.json stuff
 }
 ```
 
