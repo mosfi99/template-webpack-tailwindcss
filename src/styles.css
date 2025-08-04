@@ -1,0 +1,12 @@
+body {
+	background-color: rgb(73, 49, 97);
+}
+
+h1 {
+	color: rgb(243, 235, 224);
+}
+
+img {
+	max-width: 100%;
+	height: auto;
+}
