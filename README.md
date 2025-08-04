@@ -41,11 +41,9 @@ Create a `template.html` inside `src`. No need to put a script tag in this file!
 
 Inside `webpack.config.js`, add:
 
-- under `const path = require("path");`
-  `const HtmlWebpackPlugin = require("html-webpack-plugin");`
-- inside `module.exports`, after `output`:
-
 ```js
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+
   plugins: [
     new HtmlWebpackPlugin({
       template: "./src/template.html",
