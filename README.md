@@ -85,10 +85,10 @@ module: {
 },
 ```
 
-Now import your CSS file into `src/js/index.js`:
+Now import your CSS file into `src/index.js`:
 
 ```js
-import '../styles.css';
+import './styles.css';
 ```
 
 And bundle:
@@ -187,12 +187,10 @@ Since images aren't JavaScript, we tell Webpack that these files will be assets 
 Then, in whatever JavaScript module we want to use that image in, we just have to default import it. Example:
 
 ```js
-// src/js/index.js
+// src/index.js
 import sonicImg from './img/sonic.png';
-
 const image = document.createElement('img');
 image.src = sonicImg;
-
 document.body.appendChild(image);
 ```
 
@@ -221,8 +219,6 @@ Finally run:
 npx webpack serve
 ```
 
-**Note:** If you change the webpack config file while the dev server is running, it will not reflect those config changes.
-
 ## npm scripts at package.json
 
 - `npm run build` would be the same as running `npx webpack`.
@@ -239,44 +235,4 @@ npx webpack serve
 }
 ```
 
-## Complete webpack.config.js
-
-```js
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-
-module.exports = {
-	mode: 'development',
-	entry: './src/index.js',
-	output: {
-		filename: 'main.js',
-		path: path.resolve(__dirname, 'dist'),
-		clean: true,
-	},
-	devtool: 'eval-source-map',
-	devServer: {
-		watchFiles: ['./src/template.html'],
-	},
-	plugins: [
-		new HtmlWebpackPlugin({
-			template: './src/template.html',
-		}),
-	],
-	module: {
-		rules: [
-			{
-				test: /\.css$/i,
-				use: ['style-loader', 'css-loader', 'postcss-loader'],
-			},
-			{
-				test: /\.html$/i,
-				loader: 'html-loader',
-			},
-			{
-				test: /\.(png|svg|jpg|jpeg|gif)$/i,
-				type: 'asset/resource',
-			},
-		],
-	},
-};
-```
+**Note:** If you change the webpack config file while the dev server is running, it will not reflect those config changes.
