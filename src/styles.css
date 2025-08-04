@@ -1,10 +1,5 @@
 @import 'tailwindcss';
 
 body {
-	background-color: #1e4372;
-}
-
-img {
-	max-width: 100%;
-	height: auto;
+	background-color: #202830;
 }

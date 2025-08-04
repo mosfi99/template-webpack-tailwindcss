@@ -25,7 +25,7 @@ const path = require('path');
 
 module.exports = {
 	mode: 'development',
-	entry: './src/index.js',
+	entry: './src/js/index.js',
 	output: {
 		filename: 'main.js',
 		path: path.resolve(__dirname, 'dist'),
@@ -85,10 +85,10 @@ module: {
 },
 ```
 
-Now import your CSS file into `src/index.js`:
+Now import your CSS file into `src/js/index.js`:
 
 ```js
-import './styles.css';
+import '../styles.css';
 ```
 
 And bundle:
@@ -113,10 +113,10 @@ Create a `postcss.config.mjs` file in your project root:
 
 ```js
 export default {
-  plugins: {
-    "@tailwindcss/postcss": {},
-  }
-}
+	plugins: {
+		'@tailwindcss/postcss': {},
+	},
+};
 ```
 
 ### Update CSS Configuration
@@ -136,15 +136,15 @@ module: {
 
 ### Import Tailwind CSS
 
-Replace the content of your `src/styles.css` file with:
+At `src/styles.css` add:
 
 ```css
-@import "tailwindcss";
+@import 'tailwindcss';
 ```
 
 This single import includes all of Tailwind's base, components, and utilities.
 
-Webpack will automatically process your CSS through PostCSS and generate only the Tailwind styles you actually use.
+Webpack will automatically process the CSS through PostCSS and generate only the Tailwind styles that are actually used.
 
 ## Images
 
@@ -187,7 +187,7 @@ Since images aren't JavaScript, we tell Webpack that these files will be assets 
 Then, in whatever JavaScript module we want to use that image in, we just have to default import it. Example:
 
 ```js
-// src/index.js
+// src/js/index.js
 import sonicImg from './img/sonic.png';
 
 const image = document.createElement('img');
@@ -243,40 +243,40 @@ npx webpack serve
 
 ```js
 const path = require('path');
-const HtmlWebpackPlugin = require("html-webpack-plugin");
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  mode: 'development',
-  entry: './src/index.js',
-  output: {
-    filename: 'main.js',
-    path: path.resolve(__dirname, 'dist'),
-    clean: true,
-  },
-  devtool: "eval-source-map",
-  devServer: {
-    watchFiles: ["./src/template.html"],
-  },
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: "./src/template.html",
-    }),
-  ],
-  module: {
-    rules: [
-      {
-        test: /\.css$/i,
-        use: ["style-loader", "css-loader", "postcss-loader"],
-      },
-      {
-        test: /\.html$/i,
-        loader: "html-loader",
-      },
-      {
-        test: /\.(png|svg|jpg|jpeg|gif)$/i,
-        type: "asset/resource",
-      },
-    ],
-  },
+	mode: 'development',
+	entry: './src/index.js',
+	output: {
+		filename: 'main.js',
+		path: path.resolve(__dirname, 'dist'),
+		clean: true,
+	},
+	devtool: 'eval-source-map',
+	devServer: {
+		watchFiles: ['./src/template.html'],
+	},
+	plugins: [
+		new HtmlWebpackPlugin({
+			template: './src/template.html',
+		}),
+	],
+	module: {
+		rules: [
+			{
+				test: /\.css$/i,
+				use: ['style-loader', 'css-loader', 'postcss-loader'],
+			},
+			{
+				test: /\.html$/i,
+				loader: 'html-loader',
+			},
+			{
+				test: /\.(png|svg|jpg|jpeg|gif)$/i,
+				type: 'asset/resource',
+			},
+		],
+	},
 };
 ```
