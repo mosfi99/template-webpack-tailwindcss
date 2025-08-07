@@ -228,11 +228,11 @@ Then, in whatever JavaScript module we want to use that image in, we just have t
 
 ```js
 // src/index.js
-import sonicImg from './img/sonic.png';
+import webpackLogo from './img/webpack-logo.svg';
 
 const image = document.createElement('img');
-image.src = sonicImg;
-document.body.appendChild(image);
+image.src = webpackLogo;
+document.body.append(image);
 ```
 
 ## npm scripts at package.json
