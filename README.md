@@ -1,7 +1,5 @@
 # Webpack Setup Guide
 
-## JavaScript
-
 ### Init node
 
 ```bash
@@ -10,21 +8,38 @@ npm init -y
 
 If you see `"type": "module"` or `"type": "commonjs"` in `package.json`, remove it. Webpack works best when the module system is left unspecified to avoid conflicts.
 
+### Development and Production
+
+While we will separate the production and development specific bits out, note that we'll still maintain a "common" configuration to keep things DRY.
+
 ```bash
-npm install --save-dev webpack webpack-cli
+npm install --save-dev webpack webpack-cli webpack-dev-server webpack-merge
 ```
+
+This will install:
+
+- `webpack` & `webpack-cli`: core bundler
+
+- `webpack-dev-server`: for local development
+
+- `webpack-merge`: to split and merge config files cleanly
 
 The `--save-dev` flag (use `-D` as a shortcut) tells npm to record packages as development dependencies.
 
-Create a `src` directory with the JavaScript files (`src/index.js`, and others) inside it.
+Create 3 new files:
 
-Outside of `src`, create a `webpack.config.js`:
+- `webpack.common.js`
+- `webpack.dev.js`
+- `webpack.prod.js`
+
+Create a `src` directory to store: `index.js`, `template.html` and `styles.css`.
+
+#### webpack.common.js
 
 ```js
 const path = require('path');
 
 module.exports = {
-	mode: 'development',
 	entry: './src/js/index.js',
 	output: {
 		filename: 'main.js',
@@ -34,10 +49,39 @@ module.exports = {
 };
 ```
 
-To bundle, run:
+All the plugins will also be configured here.
 
-```bash
-npx webpack
+#### webpack.dev.js
+
+`webpack-dev-server` bundles the code behind the scenes, but without saving the files to `dist`.
+
+After installing it, set `eval-source-map` as a `devtool` option so that error messages will match up to the correct files and line numbers.
+
+By default, `webpack-dev-server` will only auto-restart when it detects changes on the files imported at the JavaScript bundle, so the HTML template will be ignored! Add the `template.html` to the dev server's array of watched files.
+
+```js
+const { merge } = require('webpack-merge');
+const common = require('./webpack.common.js');
+
+module.exports = merge(common, {
+	mode: 'development',
+	devtool: 'eval-source-map',
+	devServer: {
+		static: './dist',
+		watchFiles: ['./src/template.html'],
+	},
+});
+```
+
+#### webpack.prod.js
+
+```js
+const { merge } = require('webpack-merge');
+const common = require('./webpack.common.js');
+
+module.exports = merge(common, {
+	mode: 'production',
+});
 ```
 
 ## HTML
@@ -48,9 +92,9 @@ For HTML, use `HtmlWebpackPlugin`:
 npm install --save-dev html-webpack-plugin
 ```
 
-Create a `template.html` inside `src`. No need to put a script tag in this file! `HtmlWebpackPlugin` will automatically add the output bundle as a script tag.
+No need to put a script tag in this file! `HtmlWebpackPlugin` will automatically add the output bundle as a script tag.
 
-Inside `webpack.config.js`, add:
+Inside `webpack.common.js`, add:
 
 ```js
 const HtmlWebpackPlugin = require("html-webpack-plugin");
@@ -62,8 +106,6 @@ plugins: [
 ],
 ```
 
-Run `npx webpack` again.
-
 ## CSS
 
 For CSS, we need two packages:
@@ -72,7 +114,7 @@ For CSS, we need two packages:
 npm install --save-dev style-loader css-loader
 ```
 
-Back in `webpack.config.js`, we need to add these loaders. Since these aren't plugins, they go in a separate section under `plugins`:
+Back in `webpack.common.js`, we need to add these loaders. Since these aren't plugins, they go in a separate section under `plugins`:
 
 ```js
 module: {
@@ -99,9 +141,7 @@ npx webpack
 
 ## Tailwind CSS
 
-### Install Tailwind CSS v4 with PostCSS
-
-Install Tailwind CSS and PostCSS packages:
+To add Tailwind CSS v4 via PostCSS, install these packages:
 
 ```bash
 npm install --save-dev tailwindcss @tailwindcss/postcss postcss postcss-loader
@@ -121,7 +161,7 @@ export default {
 
 ### Update CSS Configuration
 
-Update your CSS rule in `webpack.config.js` to include PostCSS loader:
+Update your CSS rule in `webpack.common.js` to include PostCSS loader:
 
 ```js
 module: {
@@ -162,7 +202,7 @@ For example, as the src of an `<img>`:
 npm install --save-dev html-loader
 ```
 
-This will detect image file paths. Add the following object to the `module.rules` array within `webpack.config.js`:
+This will detect image file paths. Add the following object to the `module.rules` array within `webpack.common.js`:
 
 ```js
 {
@@ -175,7 +215,7 @@ This will detect image file paths. Add the following object to the `module.rules
 
 Where we will need to import the files:
 
-Since images aren't JavaScript, we tell Webpack that these files will be assets by adding an `asset/resource` rule. Inside the `module.rules` array within `webpack.config.js`:
+Since images aren't JavaScript, we tell Webpack that these files will be assets by adding an `asset/resource` rule. Inside the `module.rules` array within `webpack.common.js`:
 
 ```js
 {
@@ -189,50 +229,26 @@ Then, in whatever JavaScript module we want to use that image in, we just have t
 ```js
 // src/index.js
 import sonicImg from './img/sonic.png';
+
 const image = document.createElement('img');
 image.src = sonicImg;
 document.body.appendChild(image);
 ```
 
-## Auto-restart the page with webpack-dev-server
-
-It works by bundling the code behind the scenes, but without saving the files to `dist`.
-
-```bash
-npm install --save-dev webpack-dev-server
-```
-
-After installing it, set `eval-source-map` as a `devtool` option so that error messages will match up to the correct files and line numbers.
-
-By default, `webpack-dev-server` will only auto-restart when it detects changes on the files imported at the JavaScript bundle, so the HTML template will be ignored! Add the `template.html` to the dev server's array of watched files. In `webpack.config.js`:
-
-```js
-devtool: "eval-source-map",
-devServer: {
-  watchFiles: ["./src/template.html"],
-},
-```
-
-Finally run:
-
-```bash
-npx webpack serve
-```
-
 ## npm scripts at package.json
 
-- `npm run build` would be the same as running `npx webpack`.
-- `npm run dev` would be the same as `npx webpack serve`.
+- `npm run build`: would be the same as running `npx webpack` in production.
+- `npm run dev` would be the same as `npx webpack serve` in development.
 - `npm run deploy` to set the deploy commands.
 
 ```js
 {
   "scripts": {
-    "build": "webpack",
-    "dev": "webpack serve",
-    "deploy": ""
+    "build": "webpack --config webpack.prod.js",
+		"dev": "webpack serve --open --config webpack.dev.js"
+    "deploy": "<specific to the project configuration>"
   },
 }
 ```
 
-**Note:** If you change the webpack config file while the dev server is running, it will not reflect those config changes.
+**Note:** If you change the webpack config files while the dev server is running, it will not reflect those config changes.
